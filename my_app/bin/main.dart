@@ -1,11 +1,16 @@
+import 'dart:async';
 import 'package:http/http.dart';
 import 'dart:convert';
-
 import 'package:my_app/api_key.dart';
 
+StreamController<String> streamController = StreamController<String>();
+
 void main() {
-  //requestData();
-  //requestDataAsync();
+  StreamSubscription streamSubscription = streamController.stream.listen((String info) {
+    print(info);
+  },);
+  requestData();
+  requestDataAsync();
   sendDataAsync({
     "id" : "001",
     "name" : "Flutter",
@@ -18,23 +23,16 @@ requestData() {
   String url =
       "https://gist.githubusercontent.com/FelipeEsteves007/0d965b6ba04917c3c96c7eafa544233a/raw/e169e7b861d27565dbec0b89ab2649672d1e2261/accounts.json";
   Future<Response> futureResponse = get(Uri.parse(url));
-  print(futureResponse);
   futureResponse.then((Response response) {
-    print(response);
-    print(response.body);
-    List<dynamic> listAccounts = json.decode(response.body);
-    Map<String, dynamic> mapCarla = listAccounts.firstWhere(
-      (element) => element["name"] == "Carla",
-    );
-    print(mapCarla["balance"]);
+    streamController.add("${DateTime.now()} | Requisição de leitura (usando then)");
   });
-  print("ULTIMA");
 }
 
 Future<List<dynamic>> requestDataAsync() async {
   String url =
       "https://gist.githubusercontent.com/FelipeEsteves007/0d965b6ba04917c3c96c7eafa544233a/raw/e169e7b861d27565dbec0b89ab2649672d1e2261/accounts.json";
   Response response = await get(Uri.parse(url));
+  streamController.add("${DateTime.now()} | Requisição de leitura");
   return json.decode(response.body);
 }
 
@@ -55,12 +53,15 @@ sendDataAsync(Map<String, dynamic> mapAccount) async {
         "description" : "account.son",
         "public" : true,
         "files": {
-          "accounts.son": {
+          "accounts.json": {
             "content": content,
           }
         }
       }),
     );
-  print(response.statusCode);
-
+    if (response.statusCode.toString()[0] == "2"){
+      streamController.add("${DateTime.now()} | Requisição de adição bem sucedida (${mapAccount["name"]})");
+    } else {
+      streamController.add("${DateTime.now()} | Requisição falhou");
+    }
 }
