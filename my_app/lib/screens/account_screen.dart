@@ -1,61 +1,73 @@
 import 'dart:io';
+
 import 'package:my_app/services/accountServices.dart';
-import 'package:my_app/models/account.dart';
 
-final _accountService = Accountservices();
+import '../models/account.dart';
 
-void runChatBot() async {
-  print("Bom dia! Eu sou o Lewis, assistente do Banco d'Ouro!");
-  print("Que bom te ter aqui com a gente.\n");
+class AccountScreen {
+  final AccountService _accountService = AccountService();
 
-  bool isRunning = true;
-  while (isRunning) {
-    print("Como eu posso te ajudar? (digite o número desejado)");
-    print("1 - Ver todas sua contas.");
-    print("2 - Adicionar nova conta.");
-    print("3 - Sair\n");
+  void initializeStream() {
+    _accountService.streamInfos.listen(
+      (event) {
+        print(event);
+      },
+    );
+  }
 
-    String? input = stdin.readLineSync();
+  void runChatBot() async {
+    print("Bom dia! Eu sou o Lewis, assistente do Banco d'Ouro!");
+    print("Que bom te ter aqui com a gente.\n");
 
-    if (input != null) {
-      switch (input) {
-        case "1":
-          {
-            await _getAllAccounts();
-            break;
-          }
-        case "2":
-          {
-            await _addExampleAccount();
-            break;
-          }
-        case "3":
-          {
-            isRunning = false;
-            print("Te vejo na próxima.");
-            break;
-          }
-        default:
-          {
-            print("Não entendi. Tente novamente.");
-          }
+    bool isRunning = true;
+    while (isRunning) {
+      print("Como eu posso te ajudar? (digite o número desejado)");
+      print("1 - 👀 Ver todas sua contas.");
+      print("2 - ➕ Adicionar nova conta.");
+      print("3 - Sair\n");
+
+      String? input = stdin.readLineSync();
+
+      if (input != null) {
+        switch (input) {
+          case "1":
+            {
+              await _getAllAccounts();
+              break;
+            }
+          case "2":
+            {
+              await _addExampleAccount();
+              break;
+            }
+          case "3":
+            {
+              isRunning = false;
+              print("Te vejo na próxima. 👋");
+              break;
+            }
+          default:
+            {
+              print("Não entendi. Tente novamente.");
+            }
+        }
       }
     }
   }
-}
 
-Future<void> _getAllAccounts() async {
-  List<Account> listAccounts = await _accountService.getAll();
-  print(listAccounts);
-}
+  Future<void> _getAllAccounts() async {
+    List<Account> listAccounts = await _accountService.getAll();
+    print(listAccounts);
+  }
 
-Future<void> _addExampleAccount() async {
-  Account example = Account(
-    id: "ID555",
-    name: "Haley",
-    lastName: "Chirívia",
-    balance: 8001,
-  );
+  Future<void> _addExampleAccount() async {
+    Account example = Account(
+      id: "ID555",
+      name: "Dart",
+      lastName: "Silva",
+      balance: 8001,
+    );
 
-  await _accountService.addAccount(example);
+    await _accountService.addAccount(example);
+  }
 }

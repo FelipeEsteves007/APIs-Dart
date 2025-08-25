@@ -1,5 +1,7 @@
 import 'package:my_app/screens/account_screen.dart';
 
 void main() {
-  runChatBot();
+  AccountScreen accountScreen = AccountScreen();
+  accountScreen.initializeStream();
+  accountScreen.runChatBot();
 }
