@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:http/http.dart';
 import 'package:my_app/services/accountServices.dart';
 
 import '../models/account.dart';
@@ -8,11 +9,9 @@ class AccountScreen {
   final AccountService _accountService = AccountService();
 
   void initializeStream() {
-    _accountService.streamInfos.listen(
-      (event) {
-        print(event);
-      },
-    );
+    _accountService.streamInfos.listen((event) {
+      print(event);
+    });
   }
 
   void runChatBot() async {
@@ -55,12 +54,23 @@ class AccountScreen {
     }
   }
 
-  Future<void> _getAllAccounts() async {
-    List<Account> listAccounts = await _accountService.getAll();
-    print(listAccounts);
+  _getAllAccounts() async {
+    try {
+      List<Account> listAccounts = await _accountService.getAll();
+      print(listAccounts);
+    } on ClientException catch (clientException) {
+      print("Não foi possível alcançar o servidor");
+      print(clientException.message);
+      print(clientException.uri);
+    } on Exception {
+      print("Não consegui recuperar os dados da conta");
+      print("Tente novamente mais tarde");
+    } finally {
+      print("${DateTime.now()} | Ocorreu uma tentativa de consulta");
+    }
   }
 
-  Future<void> _addExampleAccount() async {
+  _addExampleAccount() async {
     Account example = Account(
       id: "ID555",
       name: "Dart",
