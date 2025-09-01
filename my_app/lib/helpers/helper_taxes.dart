@@ -1,4 +1,4 @@
-import '../lib/models/account.dart';
+import '../models/account.dart';
 
 double calculateTaxesByAccount({
   required Account sender,

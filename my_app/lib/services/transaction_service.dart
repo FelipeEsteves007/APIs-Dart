@@ -7,12 +7,13 @@ import 'package:my_app/models/account.dart';
 import 'package:my_app/models/transaction.dart';
 import 'package:my_app/services/account_service.dart';
 import 'package:http/http.dart';
+import '../exceptions/transaction_excepitons.dart';
 
 class TransactionService {
   final AccountService _accountService = AccountService();
   String url = "https://api.github.com/gists/413c0aefe6c6abc464581c29029c8ace";
 
-  makeTransaction({
+  Future<void> makeTransaction({
     required String idSender,
     required String idReceiver,
     required double amount,
@@ -20,7 +21,7 @@ class TransactionService {
     List<Account> listAccounts = await _accountService.getAll();
 
     if (listAccounts.where((acc) => acc.id == idSender).isEmpty) {
-      return null;
+      throw SenderNotExistException();
     }
 
     Account senderAccount = listAccounts.firstWhere(
@@ -28,7 +29,7 @@ class TransactionService {
     );
 
     if (listAccounts.where((acc) => acc.id == idReceiver).isEmpty) {
-      return null;
+      throw ReceiverNotExistsException();
     }
 
     Account receiverAccount = listAccounts.firstWhere(
@@ -41,7 +42,11 @@ class TransactionService {
     );
 
     if (senderAccount.balance < amount + taxes) {
-      return null;
+      throw InsufficientFundsException(
+        cause: senderAccount,
+        amount: amount,
+        taxes: taxes,
+      );
     }
 
     senderAccount.balance -= (amount + taxes);
