@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:my_app/services/account_service.dart';
 import 'package:http/http.dart';
-import 'package:my_app/services/accountServices.dart';
 
 import '../models/account.dart';
 
@@ -9,9 +9,11 @@ class AccountScreen {
   final AccountService _accountService = AccountService();
 
   void initializeStream() {
-    _accountService.streamInfos.listen((event) {
-      print(event);
-    });
+    _accountService.streamInfos.listen(
+      (event) {
+        print(event);
+      },
+    );
   }
 
   void runChatBot() async {
@@ -59,30 +61,33 @@ class AccountScreen {
       List<Account> listAccounts = await _accountService.getAll();
       print(listAccounts);
     } on ClientException catch (clientException) {
-      print("Não foi possível alcançar o servidor");
+      print("Não foi possível alcançar o servidor.");
+      print("Tente novamente mais tarde.");
       print(clientException.message);
       print(clientException.uri);
     } on Exception {
-      print("Não consegui recuperar os dados da conta");
-      print("Tente novamente mais tarde");
+      print("Não consegui recuperar os dados da conta.");
+      print("Tente novamente mais tarde.");
     } finally {
-      print("${DateTime.now()} | Ocorreu uma tentativa de consulta");
+      print("${DateTime.now()} | Ocorreu uma tentativa de consulta.");
+      // Aqui vai rodar antes de fechar.
     }
+    // Aqui não vai rodar antes de fechar.
   }
 
   _addExampleAccount() async {
     try {
       Account example = Account(
         id: "ID555",
-        name: "Dart",
-        lastName: "Silva",
+        name: "Haley",
+        lastName: "Chirívia",
         balance: 8001,
+        accountType: "Brigadeiro",
       );
 
       await _accountService.addAccount(example);
-      print("Conta adicionada com sucesso!");
-    } catch (e) {
-      print("Erro ao adicionar conta: $e");
+    } on Exception {
+      print("Ocorreu um problema ao tentar adicionar.");
     }
   }
 }
